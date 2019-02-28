@@ -4,7 +4,7 @@ import redis,os,traceback,json,functools
 from btcmarket.config import db,const
 from btcmarket.lib.storage import storage_context
 from .pipeline import Pipeline
-from .redis_cmd import SHARD_METHODS,translate_data
+from .redis_cmd import SHARD_METHODS
 from multiprocessing.dummy import Pool as ThreadPool
 
 class RedisEngine():
@@ -63,7 +63,7 @@ class RedisEngine():
         server = self.get_server(key)
         f = getattr(server, method)
         t = f(*args, **kwargs)
-        return translate_data(t)
+        return t
 
     def __getattr__(self,method):
         if method in SHARD_METHODS:
@@ -82,5 +82,4 @@ for x in __all__:
         raise RuntimeError("redis config name catch error,must be have a '_' character")
     globals()[x] = RedisEngine(db.storage_engines.get(x))
 
-__all__.append("translate_data")
 
